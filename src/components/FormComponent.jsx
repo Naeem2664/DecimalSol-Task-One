@@ -1,4 +1,4 @@
-import React ,{useEffect}from "react";
+import React ,{useEffect, useState}from "react";
 import { useDispatch, useSelector } from "react-redux";
 import "./../styles/form.css";
 import { fontFamily, fontSize } from "../assets/fonts";
@@ -9,21 +9,48 @@ import {
   submitForm,
 } from "../features/slices/formSlice";
 const FormComponent = () => {
+  const [message, setMessage]=useState('')
+  const [error,setError]=useState(false)
+
   const dispatch = useDispatch();
+
+  const validateStep= () => {
+    const { name, email, phone, street, city, state, zip } = formData;
+    if (step === 1) {
+      if (!name || !email || !phone) {
+        setError(true)
+        setMessage("Please fill in all fields");
+        return false;
+      }
+      setError(false)
+    } else if (step === 2) {
+      if (!street || !city || !state || !zip) {
+        setError(true)
+        setMessage("Please fill in all fields");
+        return false;
+      }
+    }
+    return true;
+  };
 
   const { step, formData } = useSelector((state) => state.form);
   const handleChange = (e) => {
     dispatch(updateField({ [e.target.name]: e.target.value }));
   };
   const handleNext = () => {
-    dispatch(nextStep());
+    if (validateStep()){
+      dispatch(nextStep());
+    }
   };
   const handlePrev = () => {
     dispatch(prevStep());
   };
   const handleSubmit = () => {
-    dispatch(submitForm(formData));
+    if (validateStep()){
+      dispatch(submitForm(formData));
     alert("Form submitted successfully!");
+    }
+    
   };
 
   const renderStep = () => {
@@ -80,6 +107,13 @@ const FormComponent = () => {
             />
           </>
         );
+        case 3:
+          return(
+            <>
+            <h1>Please Review Your Details</h1>
+            <pre>{JSON.stringify(formData,null,2)}</pre>
+            </>
+          )
 
       default:
         return null;
@@ -105,7 +139,7 @@ const FormComponent = () => {
         <form action="" className="form">
           {renderStep()}
           <div className="btns">
-            {step > 1 && (
+            {step >1  && (
               <button type="button" onClick={handlePrev}>
                 Previous
               </button>
@@ -121,6 +155,9 @@ const FormComponent = () => {
               </button>
             )}
           </div>
+          <p style={{color:'red'}}>
+          {error?message:''}
+          </p>
         </form>
       </div>
     </>

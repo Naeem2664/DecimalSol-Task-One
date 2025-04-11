@@ -12,6 +12,7 @@
   "dependencies": {
     "@fontsource/poppins": "^5.2.5",
     "@reduxjs/toolkit": "^2.6.1",
+    "formik": "^2.4.6",
     "install": "^0.13.0",
     "npm": "^11.2.0",
     "react": "^19.0.0",
